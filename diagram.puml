@@ -1,0 +1,170 @@
+@startuml Student Dashboard System
+
+' ── Domain Model ──────────────────────────────────────────────
+
+class StudyCourse {
+  + name: str
+  + course_id: str
+  + duration_semesters: int
+  + modules: list[Module]
+  + __init__(name, course_id, duration_semesters)
+  + add_module(module)
+}
+
+class Student {
+  + name: str
+  + student_id: str
+  + study_course: StudyCourse
+  + __init__(name, student_id, study_course)
+}
+
+class Semester {
+  + number: int
+  + year: int
+  + __init__(number, year)
+}
+
+class Module {
+  + name: str
+  + module_id: str
+  + credits: int
+  + __init__(name, module_id, credits)
+}
+
+class Exam {
+  + module: Module
+  + student: Student
+  + semester: Semester
+  + grade: float
+  + __init__(module, student, semester, grade=None)
+}
+
+' ── Persistence ───────────────────────────────────────────────
+
+class Database {
+  + db_name: str
+  + __init__(db_name)
+  + init_database()
+  + save_dashboard_data(student_id, data)
+  + update_target_gpa(student_id, target_gpa)
+  + update_target_end_date(student_id, target_end_date)
+  + save_deadline(student_id, deadline_type, module_name, deadline_date)
+  + delete_deadline(deadline_id)
+  + save_module_completion(student_id, module_id, grade, completion_date)
+  + get_completed_modules(student_id): list
+  + get_deadlines(student_id): list
+}
+
+' ── Service Classes ───────────────────────────────────────────
+
+class GpaCalculator {
+  + target_gpa: float
+  - _db: Database
+  - _student_id: str
+  + __init__(target_gpa, db, student_id)
+  + calculate(exams): float
+  + update_target(new_target_gpa)
+}
+
+class DeadlineManager {
+  + deadlines: list[dict]
+  - _student_id: str
+  - _db: Database
+  + __init__(student_id, db)
+  + add(deadline_type, module_name, deadline_date)
+  + delete(index)
+  + reload()
+}
+
+class StudyProgressService {
+  + target_module_days: int
+  + target_end_date: str
+  - _student: Student
+  - _db: Database
+  + __init__(student, target_module_days, db)
+  + get_completed_modules(exams): list[Module]
+  + calculate_avg_module_time(): int
+  + calculate_target_end_date(): str
+  + update_target_end_date(new_date)
+  + save_module_completions(student_id, exams)
+}
+
+' ── Facade ────────────────────────────────────────────────────
+
+class Dashboard {
+  + student: Student
+  + exams: list[Exam]
+  + target_gpa: float <<property>>
+  + deadlines: list[dict] <<property>>
+  + gpa_calculator: GpaCalculator
+  + deadline_manager: DeadlineManager
+  + study_progress: StudyProgressService
+  - _db: Database
+  + __init__(student, target_gpa, target_module_days)
+  + add_exam(exam)
+  + add_deadline(deadline_type, module_name, deadline_date)
+  + delete_deadline(deadline_index)
+  + reload_deadlines()
+  + update_target_gpa(new_target_gpa)
+  + update_target_end_date(new_target_end_date)
+  + calculate_gpa(): float
+  + calculate_avg_module_time(): int
+  + calculate_target_end_date(): str
+  + get_completed_modules(): list[Module]
+  + save_data()
+  + display()
+}
+
+' ── Web Layer ─────────────────────────────────────────────────
+
+class BaseHTTPRequestHandler <<framework>> {
+}
+
+class HTTPServer <<framework>> {
+}
+
+class DashboardHandler {
+  + do_GET()
+  + do_POST()
+  + log_message(format, *args)
+}
+
+class Server {
+  + host: str
+  + port: int
+  + __init__(host, port)
+  + start()
+}
+
+' ── Relationships ─────────────────────────────────────────────
+
+' Domain
+StudyCourse "1" *-- "0..*" Module : enthält
+Student "1" --> "1" StudyCourse : eingeschrieben in
+Exam "*" --> "1" Module : prüft
+Exam "*" --> "1" Student : abgelegt von
+Exam "*" --> "1" Semester : abgelegt in
+
+' Persistence used by services
+GpaCalculator      --> Database : nutzt
+DeadlineManager    --> Database : nutzt
+StudyProgressService --> Database : nutzt
+
+' Services reference domain
+StudyProgressService --> Student : referenziert
+
+' Dashboard (Facade) owns services and data
+Dashboard "1" *-- "1" GpaCalculator      : delegiert GPA an
+Dashboard "1" *-- "1" DeadlineManager    : delegiert Fristen an
+Dashboard "1" *-- "1" StudyProgressService : delegiert Fortschritt an
+Dashboard "1" *-- "1" Database           : teilt
+Dashboard "1" --> "1" Student            : verwaltet
+Dashboard "1" *-- "0..*" Exam            : enthält
+
+' Web layer
+DashboardHandler --|> BaseHTTPRequestHandler : erbt von
+DashboardHandler ..> Dashboard              : interagiert mit
+Server ..> DashboardHandler                 : verwendet
+Server ..> HTTPServer                       : instanziiert
+
+@enduml

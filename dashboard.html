@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .edit-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        .edit-btn:hover {
+            background: rgba(255,255,255,0.5);
+        }
+        .section {
+            margin: 30px 0;
+        }
+        .section-title {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .module-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .module-card {
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+        }
+        .module-card.completed {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .module-card.pending {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+        .deadline-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .deadline-date {
+            font-weight: bold;
+            color: #856404;
+        }
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 30px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.3s ease;
+        }
+        .add-deadline-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            margin: 100px auto;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .modal-title {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .close-btn {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{student_name}'s Study Dashboard</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Current GPA</div>
+                <div class="stat-value">{gpa}</div>
+            </div>
+            <div class="stat-card">
+                <button class="edit-btn" onclick="openEditModal('gpa')">Edit</button>
+                <div class="stat-label">Target GPA</div>
+                <div class="stat-value">{target_gpa}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg. Module Time</div>
+                <div class="stat-value">{avg_time} days</div>
+            </div>
+            <div class="stat-card">
+                <button class="edit-btn" onclick="openEditModal('date')">Edit</button>
+                <div class="stat-label">Target End Date</div>
+                <div class="stat-value">{end_date}</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Progress Overview</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {progress}%">
+                    {completed_count}/{total_count} Modules ({progress}%)
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Completed Modules</div>
+            <div class="module-list">
+                {completed_modules}
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Remaining Modules</div>
+            <div class="module-list">
+                {remaining_modules}
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Upcoming Deadlines</div>
+            <div class="add-deadline-form">
+                <h3>Add New Deadline</h3>
+                <form onsubmit="addDeadline(event)">
+                    <div class="form-group">
+                        <label>Type:</label>
+                        <select id="deadline-type" required>
+                            <option value="Exam">Exam</option>
+                            <option value="Assignment">Assignment</option>
+                            <option value="Project">Project</option>
+                            <option value="Presentation">Presentation</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Module Name:</label>
+                        <input type="text" id="module-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date:</label>
+                        <input type="date" id="deadline-date" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Add Deadline</button>
+                </form>
+            </div>
+            {deadlines}
+        </div>
+    </div>
+    
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeEditModal()">&times;</span>
+            <h2 class="modal-title" id="modal-title">Edit Value</h2>
+            <div class="form-group">
+                <label id="modal-label">New Value:</label>
+                <input type="text" id="modal-input">
+            </div>
+            <button class="btn-primary" onclick="saveEdit()">Save</button>
+        </div>
+    </div>
+    
+    <script>
+        let editType = '';
+        
+        function openEditModal(type) {
+            editType = type;
+            const modal = document.getElementById('editModal');
+            const title = document.getElementById('modal-title');
+            const label = document.getElementById('modal-label');
+            const input = document.getElementById('modal-input');
+            
+            if (type === 'gpa') {
+                title.textContent = 'Edit Target GPA';
+                label.textContent = 'New Target GPA:';
+                input.type = 'number';
+                input.step = '0.1';
+                input.min = '1.0';
+                input.max = '4.0';
+                input.value = '{target_gpa}';
+            } else if (type === 'date') {
+                title.textContent = 'Edit Target End Date';
+                label.textContent = 'New Target End Date:';
+                input.type = 'date';
+                input.value = '{end_date}';
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+        
+        function saveEdit() {
+            const value = document.getElementById('modal-input').value;
+            const formData = new URLSearchParams();
+            formData.append('action', editType === 'gpa' ? 'update_gpa' : 'update_date');
+            formData.append('value', value);
+            
+            fetch('/api', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+            
+            closeEditModal();
+        }
+        
+        function addDeadline(event) {
+            event.preventDefault();
+            const type = document.getElementById('deadline-type').value;
+            const module = document.getElementById('module-name').value;
+            const date = document.getElementById('deadline-date').value;
+            
+            const formData = new URLSearchParams();
+            formData.append('action', 'add_deadline');
+            formData.append('type', type);
+            formData.append('module', module);
+            formData.append('date', date);
+            
+            fetch('/api', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+        }
+        
+        function deleteDeadline(index) {
+            if (confirm('Are you sure you want to delete this deadline?')) {
+                const formData = new URLSearchParams();
+                formData.append('action', 'delete_deadline');
+                formData.append('index', index);
+                
+                fetch('/api', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
