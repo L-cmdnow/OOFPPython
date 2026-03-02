@@ -25,6 +25,8 @@ Es müssen **keine zusätzlichen Pakete installiert** werden. Das Programm verwe
    git clone https://github.com/L-cmdnow/OOFPPython
    ```
 
+   ### Alternativ: Projektdateien direkt von github herunterladen
+
 2. In das Projektverzeichnis wechseln:
    ```
    cd OOFPPython
