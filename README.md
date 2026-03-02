@@ -8,10 +8,6 @@ Repository zum Programm "Student Dashboard" zur Abgabe
 #### Python-Version
 Dieses Programm benötigt **Python 3.9 oder höher**.
 
-Die aktuelle Python-Version kann unter [python.org/downloads](https://www.python.org/downloads/) heruntergeladen werden.
-
-> **Wichtig beim Installieren:** Im Installer-Fenster den Haken bei **"Add Python to PATH"** setzen, bevor auf *Install Now* geklickt wird.
-
 Die installierte Version lässt sich im Terminal überprüfen:
 ```
 python --version
@@ -38,6 +34,8 @@ Es müssen **keine zusätzlichen Pakete installiert** werden. Das Programm verwe
    ```
    python dashboard.py
    ```
+   
+   ### *student_dashboard.db* wird automatisch erstellt, falls nicht schon vorhanden, und mit Testdaten gefüllt
 
 4. Das Dashboard im Browser öffnen:
    ```
