@@ -361,21 +361,21 @@ class Dashboard:
         total = self.student.study_course.modules
 
         print(f"\n{'='*50}")
-        print(f"Dashboard for {self.student.name}")
+        print(f"Dashboard für {self.student.name}")
         print(f"{'='*50}")
-        print(f"Current GPA: {self.calculate_gpa()}")
-        print(f"Target GPA: {self.target_gpa}")
-        print(f"Target End Date: {self.calculate_target_end_date()}")
-        print(f"Average Module Completion: {self.calculate_avg_module_time()} days")
-        print(f"Target Module Completion: {self.study_progress.target_module_days} days")
-        print(f"\nModule Progress: {len(completed)}/{len(total)} completed")
-        print(f"Completed Modules:")
+        print(f"Aktueller GPA: {self.calculate_gpa()}")
+        print(f"Ziel-GPA: {self.target_gpa}")
+        print(f"Ziel-Enddatum: {self.calculate_target_end_date()}")
+        print(f"Durchschnittliche Modulbearbeitungszeit: {self.calculate_avg_module_time()} Tage")
+        print(f"Ziel-Modulbearbeitungszeit: {self.study_progress.target_module_days} Tage")
+        print(f"\nModulfortschritt: {len(completed)}/{len(total)} abgeschlossen")
+        print(f"Abgeschlossene Module:")
         for module in completed:
-            print(f"  ✓ {module.name} ({module.credits} credits)")
-        print(f"\nRemaining Modules:")
+            print(f"  ✓ {module.name} ({module.credits} Credits)")
+        print(f"\nVerbleibende Module:")
         for module in [m for m in total if m not in completed]:
-            print(f"  ○ {module.name} ({module.credits} credits)")
-        print(f"\nUpcoming Deadlines:")
+            print(f"  ○ {module.name} ({module.credits} Credits)")
+        print(f"\nBevorstehende Fristen:")
         for deadline in sorted(self.deadlines, key=lambda x: x['date']):
             print(f"  {deadline['date']} - {deadline['type']}: {deadline['module']}")
         print(f"{'='*50}\n")
@@ -406,11 +406,11 @@ def create_test_data():
     course = StudyCourse("Cyber Security", "CS-2026", 6)
     
     modules = [
-        Module("Objektorientierte mit Python", "CS101", 5),
+        Module("Objektorientierte Programmierung mit Python", "CS101", 5),
         Module("Datenstrukturen", "CS102", 5),
-        Module("Algorithmmen", "CS103", 5),
-        Module("Databanken", "CS201", 5),
-        Module("Web Development", "CS202", 5),
+        Module("Algorithmen", "CS103", 5),
+        Module("Datenbanken", "CS201", 5),
+        Module("Webentwicklung", "CS202", 5),
         Module("Software Engineering", "CS203", 5),
         Module("Maschinelles Lernen", "CS301", 5),
         Module("Cloud Computing", "CS302", 5),
@@ -440,10 +440,10 @@ def create_test_data():
     
     # Füge Testdaten nur hinzu, wenn noch keine Deadlines existieren
     if len(dashboard.deadlines) == 0:
-        dashboard.add_deadline("Exam", "Software Engineering", "2024-06-15")
-        dashboard.add_deadline("Assignment", "Machine Learning", "2024-06-20")
-        dashboard.add_deadline("Project", "Cloud Computing", "2024-07-01")
-        dashboard.add_deadline("Exam", "Machine Learning", "2024-07-10")
+        dashboard.add_deadline("Prüfung", "Software Engineering", "2024-06-15")
+        dashboard.add_deadline("Abgabe", "Maschinelles Lernen", "2024-06-20")
+        dashboard.add_deadline("Projekt", "Cloud Computing", "2024-07-01")
+        dashboard.add_deadline("Prüfung", "Maschinelles Lernen", "2024-07-10")
     
     dashboard.save_data()
     
@@ -483,7 +483,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
                     <div class="module-card completed">
                         <strong>{exam.module.name}</strong><br>
                         Credits: {exam.module.credits}<br>
-                        Grade: {exam.grade}
+                        Note: {exam.grade}
                     </div>
                     '''
             
@@ -506,7 +506,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
                         <span class="deadline-date">{deadline['date']}</span> - 
                         {deadline['type']}: {deadline['module']}
                     </div>
-                    <button class="delete-btn" onclick="deleteDeadline({idx})">Delete</button>
+                    <button class="delete-btn" onclick="deleteDeadline({idx})">Löschen</button>
                 </div>
                 '''
             
@@ -552,31 +552,31 @@ class DashboardHandler(BaseHTTPRequestHandler):
             params = parse_qs(post_data)
             
             action = params.get('action', [''])[0]
-            response = {'success': False, 'message': 'Unknown action'}
-            
+            response = {'success': False, 'message': 'Unbekannte Aktion'}
+
             try:
                 if action == 'update_gpa':
                     new_gpa = float(params.get('value', [''])[0])
                     dashboard.update_target_gpa(new_gpa)
-                    response = {'success': True, 'message': 'Target GPA updated'}
-                
+                    response = {'success': True, 'message': 'Ziel-GPA aktualisiert'}
+
                 elif action == 'update_date':
                     new_date = params.get('value', [''])[0]
                     dashboard.update_target_end_date(new_date)
-                    response = {'success': True, 'message': 'Target end date updated'}
-                
+                    response = {'success': True, 'message': 'Ziel-Enddatum aktualisiert'}
+
                 elif action == 'add_deadline':
                     deadline_type = params.get('type', [''])[0]
                     module_name = params.get('module', [''])[0]
                     deadline_date = params.get('date', [''])[0]
                     dashboard.add_deadline(deadline_type, module_name, deadline_date)
-                    response = {'success': True, 'message': 'Deadline added'}
-                
+                    response = {'success': True, 'message': 'Frist hinzugefügt'}
+
                 elif action == 'delete_deadline':
                     index = int(params.get('index', [''])[0])
                     dashboard.delete_deadline(index)
                     dashboard.reload_deadlines()
-                    response = {'success': True, 'message': 'Deadline deleted'}
+                    response = {'success': True, 'message': 'Frist gelöscht'}
             
             except Exception as e:
                 response = {'success': False, 'message': str(e)}
