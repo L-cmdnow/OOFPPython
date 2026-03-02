@@ -1,5 +1,5 @@
 # OOFPPython
-Repository zur Abgabe bei Tutor
+Repository zum Programm "Student Dashboard" zur Abgabe
 
 ## Installationsanleitung (Windows)
 
