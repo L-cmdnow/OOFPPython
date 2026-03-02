@@ -95,7 +95,8 @@ class Database:
     """
     def __init__(self, db_name='student_dashboard.db'):
         """Initialisiert die Datenbank und erstellt ggf. die Tabellen."""
-        self.db_name = db_name
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.db_name = os.path.join(script_dir, db_name)
         self.init_database()
     
     def init_database(self):
@@ -529,7 +530,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 html = html.replace(placeholder, value)
             
             self.send_response(200)
-            self.send_header('Content-type', 'text/html')
+            self.send_header('Content-type', 'text/html; charset=utf-8')
             self.end_headers()
             self.wfile.write(html.encode())
         else:

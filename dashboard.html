@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Student Dashboard</title>
+    <meta charset="utf-8">
+    <title>Studenten-Dashboard</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -203,75 +204,78 @@
 </head>
 <body>
     <div class="container">
-        <h1>{student_name}'s Study Dashboard</h1>
-        
+        <h1>Studenten-Dashboard von {student_name}</h1>
+
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-label">Current GPA</div>
+                <div class="stat-label">Aktueller GPA</div>
                 <div class="stat-value">{gpa}</div>
             </div>
             <div class="stat-card">
-                <button class="edit-btn" onclick="openEditModal('gpa')">Edit</button>
-                <div class="stat-label">Target GPA</div>
+                <button class="edit-btn" onclick="openEditModal('gpa')">Bearbeiten</button>
+                <div class="stat-label">Ziel-GPA</div>
                 <div class="stat-value">{target_gpa}</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Avg. Module Time</div>
-                <div class="stat-value">{avg_time} days</div>
+                <div class="stat-label">Ø Modulbearbeitungszeit</div>
+                <div class="stat-value">{avg_time} Tage</div>
             </div>
             <div class="stat-card">
-                <button class="edit-btn" onclick="openEditModal('date')">Edit</button>
-                <div class="stat-label">Target End Date</div>
+                <button class="edit-btn" onclick="openEditModal('date')">Bearbeiten</button>
+                <div class="stat-label">Ziel-Enddatum</div>
                 <div class="stat-value">{end_date}</div>
             </div>
         </div>
-        
+
         <div class="section">
-            <div class="section-title">Progress Overview</div>
+            <div class="section-title">Fortschrittsübersicht</div>
             <div class="progress-bar">
-                <div class="progress-fill" style="width: {progress}%">
-                    {completed_count}/{total_count} Modules ({progress}%)
+                <div class="progress-fill" id="progress-fill">
+                    {completed_count}/{total_count} Module ({progress}%)
                 </div>
             </div>
+            <script>
+                document.getElementById('progress-fill').style.width = '{progress}%';
+            </script>
         </div>
-        
+
         <div class="section">
-            <div class="section-title">Completed Modules</div>
+            <div class="section-title">Abgeschlossene Module</div>
             <div class="module-list">
                 {completed_modules}
             </div>
         </div>
-        
+
         <div class="section">
-            <div class="section-title">Remaining Modules</div>
+            <div class="section-title">Verbleibende Module</div>
             <div class="module-list">
                 {remaining_modules}
             </div>
         </div>
-        
+
         <div class="section">
-            <div class="section-title">Upcoming Deadlines</div>
+            <div class="section-title">Bevorstehende Fristen</div>
             <div class="add-deadline-form">
-                <h3>Add New Deadline</h3>
+                <h3>Neue Frist hinzufügen</h3>
                 <form onsubmit="addDeadline(event)">
                     <div class="form-group">
-                        <label>Type:</label>
+                        <label>Typ:</label>
                         <select id="deadline-type" required>
-                            <option value="Exam">Exam</option>
-                            <option value="Assignment">Assignment</option>
-                            <option value="Project">Project</option>
-                            <option value="Presentation">Presentation</option>
+                            <option value="Prüfung">Prüfung</option>
+                            <option value="Abgabe">Abgabe</option>
+                            <option value="Projekt">Projekt</option>
+                            <option value="Präsentation">Präsentation</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Module Name:</label>
+                        <label>Modulname:</label>
                         <input type="text" id="module-name" required>
                     </div>
                     <div class="form-group">
-                        <label>Date:</label>
+                        <label>Datum:</label>
                         <input type="date" id="deadline-date" required>
                     </div>
-                    <button type="submit" class="btn-primary">Add Deadline</button>
+                    <button type="submit" class="btn-primary">Frist hinzufügen</button>
                 </form>
             </div>
             {deadlines}
@@ -282,12 +286,12 @@
     <div id="editModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeEditModal()">&times;</span>
-            <h2 class="modal-title" id="modal-title">Edit Value</h2>
+            <h2 class="modal-title" id="modal-title">Wert bearbeiten</h2>
             <div class="form-group">
-                <label id="modal-label">New Value:</label>
+                <label id="modal-label">Neuer Wert:</label>
                 <input type="text" id="modal-input">
             </div>
-            <button class="btn-primary" onclick="saveEdit()">Save</button>
+            <button class="btn-primary" onclick="saveEdit()">Speichern</button>
         </div>
     </div>
     
@@ -302,16 +306,16 @@
             const input = document.getElementById('modal-input');
             
             if (type === 'gpa') {
-                title.textContent = 'Edit Target GPA';
-                label.textContent = 'New Target GPA:';
+                title.textContent = 'Ziel-GPA bearbeiten';
+                label.textContent = 'Neuer Ziel-GPA:';
                 input.type = 'number';
                 input.step = '0.1';
                 input.min = '1.0';
                 input.max = '4.0';
                 input.value = '{target_gpa}';
             } else if (type === 'date') {
-                title.textContent = 'Edit Target End Date';
-                label.textContent = 'New Target End Date:';
+                title.textContent = 'Ziel-Enddatum bearbeiten';
+                label.textContent = 'Neues Ziel-Enddatum:';
                 input.type = 'date';
                 input.value = '{end_date}';
             }
@@ -339,7 +343,7 @@
                 if (data.success) {
                     location.reload();
                 } else {
-                    alert('Error: ' + data.message);
+                    alert('Fehler: ' + data.message);
                 }
             });
             
@@ -368,13 +372,13 @@
                 if (data.success) {
                     location.reload();
                 } else {
-                    alert('Error: ' + data.message);
+                    alert('Fehler: ' + data.message);
                 }
             });
         }
         
         function deleteDeadline(index) {
-            if (confirm('Are you sure you want to delete this deadline?')) {
+            if (confirm('Frist wirklich löschen?')) {
                 const formData = new URLSearchParams();
                 formData.append('action', 'delete_deadline');
                 formData.append('index', index);
@@ -389,7 +393,7 @@
                     if (data.success) {
                         location.reload();
                     } else {
-                        alert('Error: ' + data.message);
+                        alert('Fehler: ' + data.message);
                     }
                 });
             }
