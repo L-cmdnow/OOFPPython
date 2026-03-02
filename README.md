@@ -26,7 +26,7 @@ Es müssen **keine zusätzlichen Pakete installiert** werden. Das Programm verwe
 
 1. Repository herunterladen oder klonen:
    ```
-   git clone <repository-url>
+   git clone https://github.com/L-cmdnow/OOFPPython
    ```
 
 2. In das Projektverzeichnis wechseln:
