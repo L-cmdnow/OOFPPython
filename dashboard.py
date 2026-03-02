@@ -464,7 +464,12 @@ class DashboardHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         """Verarbeitet GET-Anfragen und liefert die Dashboard-HTML-Seite."""
         parsed_path = urlparse(self.path)
-        
+
+        if parsed_path.path == '/favicon.ico':
+            self.send_response(204)
+            self.end_headers()
+            return
+
         if parsed_path.path == '/':
             # Lade Deadlines aus der Datenbank neu
             dashboard.reload_deadlines()
@@ -595,6 +600,24 @@ class DashboardHandler(BaseHTTPRequestHandler):
         print(f"[{self.log_date_time_string()}] {format % args}")
 
 
+class DashboardHTTPServer(HTTPServer):
+    """
+    Erweiterter HTTP-Server mit Windows-Kompatibilität.
+
+    Unterdrückt ConnectionAbortedError, der auf Windows auftritt wenn
+    der Browser eine Verbindung vorzeitig trennt (z.B. beim Favicon-Abruf).
+    """
+    allow_reuse_address = True
+
+    def handle_error(self, request, client_address):
+        """Ignoriert Windows-spezifische Verbindungsabbrüche."""
+        import sys
+        if sys.exc_info()[0] is ConnectionAbortedError:
+            pass
+        else:
+            super().handle_error(request, client_address)
+
+
 class Server:
     """
     Kapselt den HTTP-Server: Konfiguration, Start und Ausgabe der Server-URL.
@@ -610,7 +633,7 @@ class Server:
 
     def start(self):
         """Startet den HTTP-Server und blockiert bis zum Abbruch."""
-        httpd = HTTPServer((self.host, self.port), DashboardHandler)
+        httpd = DashboardHTTPServer((self.host, self.port), DashboardHandler)
         print("\n" + "*" * 60)
         print("Dashboard Server gestartet!")
         print(f"Dashboard URL: http://{self.host}:{self.port}")
