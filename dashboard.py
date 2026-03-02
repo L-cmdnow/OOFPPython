@@ -6,8 +6,6 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 import json
 
-print("Hello, World!")
-
 class StudyCourse:
     """
     Repräsentiert einen Studiengang mit zugehörigen Modulen.
