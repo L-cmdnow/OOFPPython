@@ -35,7 +35,7 @@ Es müssen **keine zusätzlichen Pakete installiert** werden. Das Programm verwe
    python dashboard.py
    ```
    
-   ### Beim ersten Starten wird *student_dashboard* erstellt und mit Testdaten gefüllt
+   ### Beim ersten Starten wird *student_dashboard.db* erstellt und mit Testdaten gefüllt
 
 4. Das Dashboard im Browser öffnen:
    ```
