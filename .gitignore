@@ -1,0 +1,16 @@
+# Datenbank (wird beim Start automatisch erstellt)
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtuelle Umgebungen
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
