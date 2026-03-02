@@ -534,10 +534,12 @@ class DashboardHandler(BaseHTTPRequestHandler):
             for placeholder, value in replacements.items():
                 html = html.replace(placeholder, value)
             
+            html_bytes = html.encode('utf-8')
             self.send_response(200)
             self.send_header('Content-type', 'text/html; charset=utf-8')
+            self.send_header('Content-Length', str(len(html_bytes)))
             self.end_headers()
-            self.wfile.write(html.encode())
+            self.wfile.write(html_bytes)
         else:
             self.send_response(404)
             self.end_headers()
